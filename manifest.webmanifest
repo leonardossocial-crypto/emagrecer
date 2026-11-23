@@ -1,0 +1,18 @@
+{
+  "name": "Meu Plano • Saúde e Emagrecimento",
+  "short_name": "Meu Plano",
+  "description": "Acompanhamento pessoal de treino, alimentação, rotina e evolução em 24 semanas.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#17365d",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

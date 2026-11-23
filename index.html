@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17365d">
+<meta name="description" content="Aplicativo pessoal para acompanhar treino, alimentação, rotina e evolução em 24 semanas.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Meu Plano • 24 semanas</title>
+<style>
+:root{--navy:#17365d;--blue:#e8f1fa;--bg:#f4f7fb;--card:#fff;--text:#172334;--muted:#64748b;--line:#e2e8f0;--green:#16834b;--orange:#a85b12;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+header{background:var(--navy);color:#fff;padding:18px 18px 16px;position:sticky;top:0;z-index:5}header .top{display:flex;align-items:center;justify-content:space-between;gap:10px}h1{font-size:20px;margin:0}header p{margin:5px 0 0;color:#d9e7f5;font-size:12px}
+main{max-width:820px;margin:auto;padding:14px}.screen{display:none}.screen.active{display:block}.section-title{font-size:19px;margin:8px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px #102a4308}.metric{font-size:25px;font-weight:750;color:var(--navy)}.muted{color:var(--muted);font-size:12px}.small{font-size:13px}.bar{height:9px;background:#e8edf3;border-radius:20px;overflow:hidden;margin-top:8px}.bar span{display:block;height:100%;background:#16834b;width:0%}
+button,.btn{border:0;border-radius:11px;padding:11px 14px;background:var(--navy);color:#fff;font-weight:650;font-size:14px;cursor:pointer}.secondary{background:#e8eef5;color:var(--navy)}.danger{background:#fff0ef;color:var(--red)}button:disabled{opacity:.5}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:7px 4px calc(7px + env(safe-area-inset-bottom));z-index:10}
+nav button{background:transparent;color:#53657a;padding:7px 5px;min-width:0;flex:1;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px}nav button b{font-size:19px;font-weight:500}nav button.active{color:var(--navy);background:var(--blue)}
+label{display:block;font-size:12px;font-weight:650;color:#42536a;margin:10px 0 5px}input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:10px;background:white;color:var(--text);font:inherit}input[type=checkbox]{width:auto;transform:scale(1.2);margin-right:7px}
+.row{display:flex;gap:9px;align-items:center}.row>*{flex:1}.exercise{padding:12px 0;border-bottom:1px solid var(--line)}.exercise:last-child{border:0}.exercise strong{display:block}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:var(--blue);color:var(--navy);font-size:11px;font-weight:700;margin:3px 3px 3px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line)}th{color:var(--muted)}
+.notice{background:#fff7e8;border:1px solid #f4d6a5;border-radius:12px;padding:12px;font-size:12px;color:#70410d;margin:12px 0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1}
+.hidden{display:none!important}.checkline{display:flex;align-items:center;gap:8px;padding:8px 0}
+h3{margin:5px 0 4px;font-size:15px}
+@media(min-width:650px){main{padding:22px}.grid{grid-template-columns:repeat(4,minmax(0,1fr))}nav{left:50%;transform:translateX(-50%);width:min(820px,100%);border-radius:16px 16px 0 0}}
+</style>
+</head>
+<body>
+<header><div class="top"><div><h1>Meu Plano</h1><p>Saúde, emagrecimento e rotina • 24 semanas</p></div><button id="installBtn" class="secondary hidden">Instalar</button></div></header>
+<main>
+<section id="inicio" class="screen active">
+<h2 class="section-title">Seu acompanhamento</h2>
+<div class="grid">
+<div class="card"><div class="muted">Peso mais recente</div><div class="metric" id="lastWeight">110 kg</div><div class="muted">Meta de referência: 95 kg</div></div>
+<div class="card"><div class="muted">Progresso até a meta</div><div class="metric" id="lost">0 kg</div><div class="bar"><span id="goalBar"></span></div></div>
+<div class="card"><div class="muted">Meta alimentar</div><div class="metric">2.100</div><div class="muted">kcal/dia (estimativa inicial)</div></div>
+<div class="card"><div class="muted">Semana do plano</div><div class="metric" id="weekNow">1/24</div><div class="muted">Registre sua evolução semanal</div></div>
+</div>
+<div class="card"><h3>Metas diárias de referência</h3><div class="grid">
+<div><b>150 g</b><div class="muted">Proteínas</div></div><div><b>218 g</b><div class="muted">Carboidratos</div></div><div><b>70 g</b><div class="muted">Gorduras</div></div><div><b>30–35 g</b><div class="muted">Fibras</div></div></div></div>
+<div class="card"><h3>Atalhos de hoje</h3><div class="actions"><button onclick="show('treinos')">Registrar treino</button><button class="secondary" onclick="show('alimentacao')">Registrar refeição</button></div><div class="actions"><button class="secondary" onclick="show('evolucao')">Registrar peso</button><button class="secondary" onclick="show('rotina')">Ver rotina diária</button></div></div>
+<div class="notice">Plano inicial de referência. Antes de começar, é prudente avaliação clínica e adaptação dos exercícios com profissional de educação física. Não treine com dor no peito, desmaio, tontura importante ou falta de ar desproporcional.</div>
+</section>
+
+<section id="treinos" class="screen">
+<h2 class="section-title">Treinos e atividade física</h2>
+<div class="card"><label>Escolha o dia / ficha</label><select id="workoutSelect"><option value="A">Musculação A • Segunda</option><option value="cardio1">Cardio + mobilidade • Terça</option><option value="B">Musculação B • Quarta</option><option value="cardio2">Cardio + mobilidade • Quinta</option><option value="C">Musculação C • Sexta (a partir da semana 3–4)</option><option value="recovery">Recuperação • fim de semana</option></select><div id="workoutList"></div><label>Data do treino</label><input type="date" id="workoutDate"><label>Observações</label><textarea id="workoutNotes" rows="2" placeholder="Como se sentiu? Houve desconforto?"></textarea><div class="actions"><button onclick="saveWorkout()">Salvar treino</button></div></div>
+<div class="card"><h3>Histórico de treinos</h3><div id="workoutHistory" class="small muted">Ainda não há treinos registrados.</div></div>
+<div class="notice">Comece com musculação A e B nas semanas 1–2. Inclua C a partir da semana 3–4 somente se estiver bem adaptado. Faça as séries com técnica controlada, sem buscar falha muscular.</div>
+</section>
+
+<section id="alimentacao" class="screen">
+<h2 class="section-title">Alimentação</h2>
+<div class="card"><h3>Metas diárias</h3><div class="grid"><div><b>2.100 kcal</b><div class="muted">Energia estimada</div></div><div><b>150 g</b><div class="muted">Proteínas</div></div><div><b>218 g</b><div class="muted">Carboidratos</div></div><div><b>70 g</b><div class="muted">Gorduras</div></div></div><p class="muted">Fibras: 30–35 g/dia. Metas aproximadas; ajuste com nutricionista.</p></div>
+<div class="card"><h3>Registrar refeição</h3><label>Data</label><input type="date" id="mealDate"><label>Refeição</label><select id="mealType"><option>Café da manhã</option><option>Lanche da manhã</option><option>Almoço</option><option>Lanche da tarde</option><option>Jantar</option><option>Ceia</option></select><label>Alimentos / porções</label><textarea id="mealFood" rows="2" placeholder="Ex.: arroz, feijão, frango, salada"></textarea><div class="row"><div><label>Calorias (kcal)</label><input type="number" id="mealKcal" min="0" placeholder="0"></div><div><label>Proteína (g)</label><input type="number" id="mealProtein" min="0" placeholder="0"></div></div><div class="row"><div><label>Carboidratos (g)</label><input type="number" id="mealCarb" min="0" placeholder="0"></div><div><label>Gorduras (g)</label><input type="number" id="mealFat" min="0" placeholder="0"></div></div><label>Fibras (g)</label><input type="number" id="mealFiber" min="0" placeholder="0"><div class="actions"><button onclick="saveMeal()">Salvar refeição</button></div></div>
+<div class="card"><h3>Resumo do dia selecionado</h3><label>Data para consultar</label><input type="date" id="mealSummaryDate"><div id="mealSummary" class="small"></div></div>
+<div class="card"><h3>Sugestões de alimentos</h3><p class="small"><b>Proteínas:</b> ovos, frango, peixe, carnes magras, iogurte, leite, feijão e lentilha.</p><p class="small"><b>Carboidratos e fibras:</b> arroz, feijão, aveia, pão integral, batata, mandioca, frutas, verduras e legumes.</p><p class="small"><b>Gorduras:</b> azeite medido, abacate, castanhas, sementes, ovos e peixes.</p></div>
+</section>
+
+<section id="rotina" class="screen">
+<h2 class="section-title">Rotina diária integrada</h2>
+<div class="card"><p class="muted">Modelo de referência. Adapte aos seus horários reais sem sacrificar o sono.</p><div id="routineList"></div><div class="actions"><button onclick="saveRoutine()">Salvar checklist do dia</button></div></div>
+<div class="card"><h3>Hábitos de hoje</h3><div id="routineStatus" class="small muted"></div></div>
+</section>
+
+<section id="evolucao" class="screen">
+<h2 class="section-title">Evolução e medidas</h2>
+<div class="card"><h3>Novo registro semanal</h3><label>Data</label><input type="date" id="weightDate"><div class="row"><div><label>Peso (kg)</label><input type="number" id="weightValue" step="0.1" min="1" placeholder="Ex.: 109.5"></div><div><label>Cintura (cm)</label><input type="number" id="waistValue" step="0.1" min="1" placeholder="Opcional"></div></div><div class="row"><div><label>Treinos na semana</label><input type="number" id="trainCount" min="0" max="7" placeholder="0"></div><div><label>Cardio (min/semana)</label><input type="number" id="cardioMinutes" min="0" placeholder="0"></div></div><div class="row"><div><label>Sono médio (horas)</label><input type="number" id="sleepHours" step="0.1" min="0" max="24" placeholder="Ex.: 7.5"></div><div><label>Energia (1 a 5)</label><select id="energy"><option value="">Selecione</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div></div><label>Observações / desconfortos</label><textarea id="progressNotes" rows="2"></textarea><div class="actions"><button onclick="saveProgress()">Salvar evolução</button></div></div>
+<div class="card"><h3>Histórico</h3><div id="progressHistory"></div></div>
+<div class="card"><h3>Exportar ou importar seus dados</h3><p class="muted">Faça cópias de segurança regularmente. Os dados ficam armazenados neste navegador/dispositivo.</p><div class="actions"><button onclick="exportData()">Exportar backup</button><button class="secondary" onclick="document.getElementById('importFile').click()">Importar backup</button></div><input type="file" id="importFile" accept="application/json" class="hidden" onchange="importData(event)"></div>
+</section>
+
+<section id="config" class="screen">
+<h2 class="section-title">Configurações</h2>
+<div class="card"><h3>Dados e meta</h3><div class="row"><div><label>Peso inicial (kg)</label><input id="initialWeight" type="number" value="110" step=".1"></div><div><label>Meta (kg)</label><input id="targetWeight" type="number" value="95" step=".1"></div></div><label>Data de início do plano</label><input id="startDate" type="date"><div class="actions"><button onclick="saveSettings()">Salvar configurações</button></div></div>
+<div class="card"><h3>Privacidade</h3><p class="small">Este aplicativo não cria conta e não envia seus registros para um servidor. Os dados são mantidos localmente no armazenamento do navegador. Limpar os dados do navegador ou trocar de aparelho pode apagá-los; use a opção de backup.</p></div>
+<div class="card"><h3>Instalação</h3><p class="small">Depois de publicar o aplicativo em um endereço HTTPS, abra-o no navegador do celular e use “Adicionar à tela inicial” ou “Instalar aplicativo”.</p></div>
+</section>
+</main>
+<nav>
+<button class="active" data-screen="inicio"><b>⌂</b>Início</button>
+<button data-screen="treinos"><b>▣</b>Treinos</button>
+<button data-screen="alimentacao"><b>◉</b>Alimentação</button>
+<button data-screen="rotina"><b>☼</b>Rotina</button>
+<button data-screen="evolucao"><b>↗</b>Evolução</button>
+<button data-screen="config"><b>⚙</b>Mais</button>
+</nav>
+<script>
+const KEY='meuPlano24_v1';
+const today=()=>new Date().toISOString().slice(0,10);
+let data=JSON.parse(localStorage.getItem(KEY)||'{}');
+data.progress ||= []; data.meals ||= []; data.workouts ||= []; data.routine ||= {};
+data.settings ||= {initialWeight:110,targetWeight:95,startDate:today()};
+const save=()=>localStorage.setItem(KEY,JSON.stringify(data));
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.screen===id));if(id==='inicio')renderHome();if(id==='treinos')renderWorkout();if(id==='alimentacao')renderMeals();if(id==='rotina')renderRoutine();if(id==='evolucao')renderProgress()}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.screen)));
+const workouts={
+A:[['Leg press','2','10–12'],['Supino máquina','2','10–12'],['Puxada frontal','2','10–12'],['Mesa flexora','2','10–12'],['Desenvolvimento máquina','2','10–12'],['Panturrilha máquina ou em pé','2','12–15']],
+B:[['Cadeira extensora','2','10–12'],['Remada sentada máquina','2','10–12'],['Elevação pélvica / máquina','2','10–12'],['Rosca bíceps','2','10–12'],['Tríceps na polia','2','10–12']],
+C:[['Agachamento até banco / sentar-levantar','2','8–10'],['Leg press leve/moderado','2','10–12'],['Puxada frontal ou remada','2','10–12'],['Mesa flexora','2','10–12'],['Supino inclinado máquina','2','10–12'],['Abdominal adaptado (máquina ou dead bug)','2','8–12']],
+cardio1:[['Caminhada ou bicicleta','1','15–20 min inicialmente'],['Mobilidade de tornozelos, quadris e ombros','1','5–8 min']],
+cardio2:[['Caminhada ou bicicleta','1','15–20 min inicialmente'],['Alongamento leve de peitoral, panturrilha e posterior da coxa','1','15–20 s por posição; 1–2 voltas']],
+recovery:[['Caminhada leve opcional','1','10–30 min']]
+};
+const workoutNames={A:'Musculação A',B:'Musculação B',C:'Musculação C',cardio1:'Cardio + mobilidade',cardio2:'Cardio + mobilidade',recovery:'Recuperação'};
+function renderWorkout(){let k=$('workoutSelect').value; $('workoutList').innerHTML=(workouts[k]||[]).map((e,i)=>`<div class="exercise"><div class="checkline"><input type="checkbox" id="ex${i}"><div><strong>${e[0]}</strong><span class="muted">${e[1]} série(s) • ${e[2]}</span></div></div><div class="row"><div><label>Carga (opcional)</label><input id="load${i}" placeholder="kg / nível"></div><div><label>Repetições/tempo realizado</label><input id="done${i}" placeholder="${e[2]}"></div></div></div>`).join('')}
+$('workoutSelect').addEventListener('change',renderWorkout);
+function saveWorkout(){let k=$('workoutSelect').value;let items=(workouts[k]||[]).map((e,i)=>({exercise:e[0],done:$('ex'+i).checked,load:$('load'+i).value,actual:$('done'+i).value}));data.workouts.unshift({date:$('workoutDate').value||today(),type:workoutNames[k],items,notes:$('workoutNotes').value});save();$('workoutNotes').value='';renderWorkout();renderWorkoutHistory();alert('Treino registrado.')}
+function renderWorkoutHistory(){$('workoutHistory').innerHTML=data.workouts.length?data.workouts.slice(0,12).map(w=>`<div class="exercise"><b>${w.date} • ${w.type}</b><div class="muted">${w.items.filter(x=>x.done).length}/${w.items.length} atividades concluídas ${w.notes?' • '+esc(w.notes):''}</div></div>`).join(''):'Ainda não há treinos registrados.'}
+function saveMeal(){let m={date:$('mealDate').value||today(),type:$('mealType').value,food:$('mealFood').value,kcal:+$('mealKcal').value||0,protein:+$('mealProtein').value||0,carb:+$('mealCarb').value||0,fat:+$('mealFat').value||0,fiber:+$('mealFiber').value||0};if(!m.food.trim()){alert('Informe os alimentos ou a refeição.');return}data.meals.push(m);save();$('mealFood').value='';['mealKcal','mealProtein','mealCarb','mealFat','mealFiber'].forEach(id=>$(id).value='');renderMeals();alert('Refeição registrada.')}
+function renderMeals(){let d=$('mealSummaryDate').value||today();let a=data.meals.filter(m=>m.date===d);let sum=k=>a.reduce((s,m)=>s+(m[k]||0),0);$('mealSummary').innerHTML=`<p><b>${a.length}</b> refeição(ões) registrada(s) em ${d}</p><div class="grid"><div>${sum('kcal')} kcal <span class="muted">/ 2.100</span></div><div>${sum('protein')} g proteína <span class="muted">/ 150</span></div><div>${sum('carb')} g carboidratos <span class="muted">/ 218</span></div><div>${sum('fat')} g gorduras <span class="muted">/ 70</span></div><div>${sum('fiber')} g fibras <span class="muted">/ 30–35</span></div></div><div class="bar"><span style="width:${Math.min(100,sum('kcal')/2100*100)}%"></span></div>`+(a.length?'<hr>'+a.map(m=>`<p class="small"><b>${esc(m.type)}:</b> ${esc(m.food)} <span class="muted">(${m.kcal} kcal)</span></p>`).join(''):'');}
+$('mealSummaryDate').addEventListener('change',renderMeals);
+function renderRoutine(){let items=[['06:00','Acordar e luz natural • 15–30 min'],['06:15','Mobilidade leve • 5–10 min'],['06:30','Academia nos dias programados'],['07:30','Café da manhã'],['10:00','Lanche, se necessário'],['12:30','Almoço completo'],['16:00','Lanche da tarde'],['19:00','Jantar mais leve e suficiente'],['20:00','Desacelerar e reduzir luz intensa/telas'],['21:00','Relaxamento / respiração / leitura'],['22:00–22:30','Dormir; buscar 7–9 horas']];let key=today();let checked=data.routine[key]||[];$('routineList').innerHTML=items.map((x,i)=>`<div class="checkline"><input type="checkbox" id="habit${i}" ${checked.includes(i)?'checked':''}><div><b>${x[0]}</b><div class="small">${x[1]}</div></div></div>`).join('');$('routineStatus').textContent=`${checked.length} de ${items.length} hábitos marcados hoje.`}
+function saveRoutine(){let arr=[];for(let i=0;i<11;i++)if($('habit'+i).checked)arr.push(i);data.routine[today()]=arr;save();renderRoutine();alert('Rotina atualizada.')}
+function saveProgress(){let p={date:$('weightDate').value||today(),weight:+$('weightValue').value,waist:+$('waistValue').value||null,train:+$('trainCount').value||0,cardio:+$('cardioMinutes').value||0,sleep:+$('sleepHours').value||0,energy:$('energy').value,notes:$('progressNotes').value};if(!p.weight||p.weight<30||p.weight>300){alert('Informe um peso válido.');return}data.progress.push(p);data.progress.sort((a,b)=>a.date.localeCompare(b.date));save();$('weightValue').value='';$('waistValue').value='';$('progressNotes').value='';renderProgress();renderHome();alert('Evolução registrada.')}
+function renderProgress(){$('progressHistory').innerHTML=data.progress.length?'<table><tr><th>Data</th><th>Peso</th><th>Cintura</th><th>Treinos</th><th>Sono</th></tr>'+data.progress.slice().reverse().map(p=>`<tr><td>${p.date}</td><td>${p.weight.toFixed(1)} kg</td><td>${p.waist? p.waist+' cm':'—'}</td><td>${p.train}</td><td>${p.sleep||'—'} h</td></tr>`).join('')+'</table>':'Nenhum registro ainda.'}
+function renderHome(){let p=data.progress[data.progress.length-1];let w=p?p.weight:data.settings.initialWeight;let start=+data.settings.initialWeight,target=+data.settings.targetWeight;let lost=start-w;let total=start-target;let pct=total>0?Math.max(0,Math.min(100,lost/total*100)):0;$('lastWeight').textContent=w.toFixed(1)+' kg';$('lost').textContent=(lost>=0?lost.toFixed(1):lost.toFixed(1))+' kg';$('goalBar').style.width=pct+'%';let days=Math.max(0,Math.floor((new Date(today())-new Date(data.settings.startDate+'T00:00:00'))/86400000));$('weekNow').textContent=Math.min(24,Math.floor(days/7)+1)+'/24';}
+function saveSettings(){data.settings={initialWeight:+$('initialWeight').value||110,targetWeight:+$('targetWeight').value||95,startDate:$('startDate').value||today()};save();renderHome();alert('Configurações salvas.')}
+function exportData(){let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backup-meu-plano.json';a.click();URL.revokeObjectURL(a.href)}
+function importData(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!x.settings||!Array.isArray(x.progress))throw Error();data=x;data.meals||=[];data.workouts||=[];data.routine||={};save();renderHome();renderProgress();alert('Backup importado.')}catch(err){alert('Arquivo de backup inválido.')}};r.readAsText(f)}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+['workoutDate','mealDate','mealSummaryDate','weightDate'].forEach(id=>$(id).value=today());
+$('startDate').value=data.settings.startDate;$('initialWeight').value=data.settings.initialWeight;$('targetWeight').value=data.settings.targetWeight;
+renderWorkout();renderWorkoutHistory();renderMeals();renderRoutine();renderProgress();renderHome();
+let deferredPrompt;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').classList.remove('hidden')});
+$('installBtn').addEventListener('click',async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;$('installBtn').classList.add('hidden')});
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>

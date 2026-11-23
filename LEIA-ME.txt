@@ -1,0 +1,22 @@
+MEU PLANO — PWA
+
+Conteúdo:
+- index.html: aplicativo responsivo
+- manifest.webmanifest: identificação e configuração PWA
+- sw.js: cache e funcionamento offline após primeiro acesso
+- icon.svg: ícone do aplicativo
+
+PUBLICAÇÃO / INSTALAÇÃO
+1. Publique o conteúdo desta pasta em um serviço de hospedagem estática com HTTPS (por exemplo, GitHub Pages, Netlify ou Vercel).
+2. Abra o endereço HTTPS no Chrome do Android ou Safari do iPhone.
+3. Android/Chrome: menu ⋮ > Instalar app ou Adicionar à tela inicial.
+4. iPhone/Safari: Compartilhar > Adicionar à Tela de Início.
+
+DADOS E PRIVACIDADE
+- Os registros ficam no armazenamento local do navegador (localStorage).
+- Não há conta, sincronização em nuvem ou envio automático de dados.
+- Use Evolução > Exportar backup para guardar seus registros e Importar backup para restaurá-los.
+- Limpar dados do navegador ou trocar de aparelho pode apagar os registros.
+
+OBSERVAÇÃO
+A instalação PWA exige publicação em HTTPS (ou ambiente localhost para testes). Abrir o HTML diretamente como arquivo não habilita a instalação PWA.
